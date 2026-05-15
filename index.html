@@ -820,7 +820,7 @@ function collectData(){
 // ══════════════════════════════════════════════════════
 // CONFIGURATION — paste your Apps Script Web App URL here after deployment
 // ══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOwANZGxzKi8W01bpzYieolVm89V0POGvlCT4jbvb3/dev'; // ← replace after Step 2 below
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysWbfw3sevEE0YorPi4HxyaST9XcFc_qzCTqWj30sx4NPojREilYVW9zAt8FDnn4uDgg/exec'; // ← replace after Step 2 below
 
 // ── SUBMIT ──
 async function submitForm(){
@@ -864,7 +864,7 @@ async function submitForm(){
 
 // ── POST TO APPS SCRIPT ──
 async function postToAppsScript(d){
-  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbxOwANZGxzKi8W01bpzYieolVm89V0POGvlCT4jbvb3/dev'){
+  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==='YOUR_APPS_SCRIPT_WEB_APP_URL'){
     console.warn('Apps Script URL not configured — briefing skipped in dev mode');
     return;
   }

@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Discovery Profile — Wealth Advisory</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9A84C;--gold-dim:rgba(201,168,76,0.13);--gold-border:rgba(201,168,76,0.28);
+  --ink:#0E0E0E;--ink-soft:#2A2A2A;--smoke:#F5F3EF;--cream:#FAF8F4;
+  --mist:#EDEDEA;--muted:#7A7570;--shadow:0 32px 80px rgba(14,14,14,0.12);--r:2px;
+  --green:#27ae60;--red:#e74c3c;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--smoke);color:var(--ink);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px 80px}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.5}
+.wrapper{position:relative;z-index:1;width:100%;max-width:760px}
+
+/* HEADER */
+.header{text-align:center;margin-bottom:44px;animation:fadeDown .8s ease both}
+.logo-mark{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px}
+.logo-d{width:10px;height:10px;background:var(--gold);transform:rotate(45deg)}
+.logo-t{font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,44px);font-weight:300;line-height:1.15;margin-bottom:12px}
+.header h1 em{font-style:italic;color:var(--gold)}
+.header p{font-size:14px;color:var(--muted);font-weight:300;max-width:420px;margin:0 auto;line-height:1.7}
+
+/* PROGRESS */
+.progress-rail{display:flex;align-items:center;justify-content:center;margin-bottom:40px;animation:fadeDown .8s .1s ease both}
+.step-node{display:flex;flex-direction:column;align-items:center;gap:7px}
+.step-circle{width:33px;height:33px;border-radius:50%;border:1px solid var(--gold-border);background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--muted);transition:all .4s}
+.step-circle svg{display:none}
+.step-node.active .step-circle{background:var(--gold);border-color:var(--gold);color:#fff;box-shadow:0 0 0 5px var(--gold-dim)}
+.step-node.done .step-circle{background:var(--ink);border-color:var(--ink);color:#fff}
+.step-node.done .step-circle .num{display:none}
+.step-node.done .step-circle svg{display:block}
+.step-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;white-space:nowrap;transition:color .3s}
+.step-node.active .step-label{color:var(--gold)}
+.step-node.done .step-label{color:var(--ink)}
+.step-line{flex:1;height:1px;background:var(--gold-border);min-width:20px;max-width:54px;margin-bottom:20px;transition:background .4s}
+.step-line.done{background:var(--ink-soft)}
+
+/* CARD */
+.card{background:var(--cream);border:1px solid var(--gold-border);padding:48px 52px;box-shadow:var(--shadow);position:relative;overflow:hidden;animation:fadeUp .6s ease both}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+@media(max-width:600px){.card{padding:30px 22px}}
+
+/* SECTION */
+.sec-hdr{margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--mist)}
+.sec-tag{display:inline-block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:8px}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;line-height:1.3}
+.sec-sub{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.6;font-weight:300}
+.sub-hdr{margin:26px 0 4px;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;display:flex;align-items:center;gap:10px}
+.sub-hdr::after{content:'';flex:1;height:1px;background:var(--mist)}
+.sub-desc{font-size:12px;color:var(--muted);margin-bottom:12px;font-weight:300}
+
+/* FIELDS */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px}
+.fg.t{grid-template-columns:1fr 1fr 1fr}
+.ff{grid-column:1/-1}
+@media(max-width:560px){.fg,.fg.t{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.field label .req{color:var(--gold);margin-left:2px}
+.field input,.field select,.field textarea{font-family:'DM Sans',sans-serif;font-size:14px;background:#fff;border:1px solid var(--mist);border-radius:var(--r);padding:12px 14px;color:var(--ink);outline:none;transition:border-color .25s,box-shadow .25s;width:100%;appearance:none;-webkit-appearance:none}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7570' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;cursor:pointer}
+.field textarea{resize:vertical;min-height:78px;line-height:1.6}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+.field input::placeholder,.field textarea::placeholder{color:#C0BDB8}
+.fhint{font-size:11px;color:var(--muted);font-weight:300;line-height:1.5}
+.fdiv{grid-column:1/-1;height:1px;background:var(--mist);margin:4px 0}
+.pfx-wrap{position:relative}
+.pfx-wrap::before{content:'$';position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--muted);pointer-events:none}
+.pfx-wrap input{padding-left:26px}
+
+/* SURPLUS */
+.surplus-box{grid-column:1/-1;background:var(--gold-dim);border:1px solid var(--gold-border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-radius:var(--r)}
+.s-lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.s-hint{font-size:11px;color:var(--muted);font-weight:300;margin-top:2px}
+.s-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--gold)}
+.s-val.neg{color:var(--red)}
+
+/* CPF */
+.cpf-block{grid-column:1/-1;background:#fff;border:1px solid var(--mist);padding:18px;border-radius:var(--r)}
+.cpf-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cpf-badge{background:#e8f4fd;color:#2980b9;font-size:9px;padding:2px 8px;border-radius:50px;letter-spacing:.1em;font-weight:600}
+.cpf-g{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:480px){.cpf-g{grid-template-columns:1fr 1fr}}
+.cpf-item{display:flex;flex-direction:column;gap:5px}
+.cpf-item label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.cpf-item input{font-family:'DM Sans',sans-serif;font-size:13px;background:var(--smoke);border:1px solid var(--mist);padding:9px 10px 9px 22px;color:var(--ink);outline:none;border-radius:var(--r);transition:border-color .2s;width:100%}
+.cpf-item input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+.cpf-total{margin-top:12px;padding-top:12px;border-top:1px solid var(--mist);display:flex;justify-content:space-between;align-items:center}
+.cpf-total .tl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cpf-total .tv{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--ink)}
+
+/* LIABILITIES */
+.liab-wrap{overflow-x:auto;margin-top:8px}
+.lt{width:100%;border-collapse:collapse;min-width:460px}
+.lt thead th{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:8px 7px;text-align:left;border-bottom:1px solid var(--mist)}
+.lt tbody td{padding:4px 4px;vertical-align:middle}
+.lt td input,.lt td select{font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;border:1px solid var(--mist);padding:8px 10px;color:var(--ink);outline:none;border-radius:var(--r);width:100%;appearance:none;transition:border-color .2s}
+.lt td select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7570' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px}
+.lt td input:focus,.lt td select:focus{border-color:var(--gold)}
+.lt td.nc{position:relative}
+.lt td.nc::before{content:'$';position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none}
+.lt td.nc input{padding-left:22px}
+.liab-tot{display:flex;justify-content:space-between;padding:10px 5px 0;border-top:1px solid var(--mist);margin-top:4px}
+.lt-lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.lt-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--red)}
+.rm-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:17px;padding:3px 6px;transition:color .2s;line-height:1}
+.rm-btn:hover{color:var(--red)}
+
+/* CHOICES / PILLS */
+.cg{display:flex;flex-direction:column;gap:8px}
+.ci{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border:1px solid var(--mist);background:#fff;cursor:pointer;transition:all .2s;border-radius:var(--r)}
+.ci:hover{border-color:var(--gold);background:var(--gold-dim)}
+.ci input[type=radio],.ci input[type=checkbox]{width:15px;height:15px;min-width:15px;margin-top:2px;accent-color:var(--gold);cursor:pointer;border:none;padding:0;box-shadow:none}
+.ci.sel{border-color:var(--gold);background:var(--gold-dim)}
+.cl{font-size:13px;color:var(--ink);line-height:1.4}
+.cl small{display:block;font-size:11px;color:var(--muted);font-weight:300;margin-top:2px}
+.pg{display:flex;flex-wrap:wrap;gap:7px}
+.pill{padding:7px 15px;border:1px solid var(--gold-border);background:#fff;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s;border-radius:50px;user-select:none;font-family:'DM Sans',sans-serif}
+.pill:hover{border-color:var(--gold);color:var(--ink)}
+.pill.on{background:var(--gold);border-color:var(--gold);color:#fff}
+
+/* TOGGLE BUTTONS */
+.tg-grp{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px}
+.tg{padding:8px 15px;border:1px solid var(--mist);background:#fff;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s;border-radius:4px;font-family:'DM Sans',sans-serif;user-select:none}
+.tg:hover{border-color:var(--gold);color:var(--ink)}
+.tg.on{background:var(--gold);border-color:var(--gold);color:#fff}
+
+/* ── COVERAGE HAS/NO TOGGLE ── */
+.cov-toggle-wrap{display:flex;gap:0;border:1px solid var(--mist);border-radius:6px;overflow:hidden;width:fit-content;margin-bottom:0}
+.cov-toggle-btn{padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;border:none;cursor:pointer;transition:all .22s;background:#fff;color:var(--muted);display:flex;align-items:center;gap:7px}
+.cov-toggle-btn:first-child{border-right:1px solid var(--mist)}
+.cov-toggle-btn.has-yes{background:#e8f8f0;color:#1a8a4a;border-color:#b8e6cc}
+.cov-toggle-btn.has-no{background:#fdeded;color:#a93226;border-color:#f5b7b1}
+.cov-toggle-btn svg{width:14px;height:14px;flex-shrink:0}
+
+/* ── COVERAGE CARD ── */
+.cov-card{border:1px solid var(--mist);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.cov-card-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#fff;cursor:default}
+.cov-card-left{display:flex;align-items:center;gap:12px}
+.cov-card-title{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink)}
+.ins-tag{font-size:10px;padding:3px 10px;border-radius:50px;font-weight:600;letter-spacing:.08em}
+.t-blue{background:#e8f4fd;color:#2980b9}
+.t-teal{background:#e8f8f5;color:#1abc9c}
+.t-rose{background:#fef0ef;color:#e74c3c}
+.t-gold{background:var(--gold-dim);color:#a07830}
+.t-purple{background:#f4f0fd;color:#8e44ad}
+.cov-status-badge{font-size:11px;padding:4px 12px;border-radius:50px;font-weight:600;letter-spacing:.06em;white-space:nowrap}
+.csb-none{background:#fdeded;color:#a93226}
+.csb-has{background:#e8f8f0;color:#1a8a4a}
+
+/* ── EXPANDABLE DETAIL PANEL ── */
+.cov-detail{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1),padding .3s ease,opacity .3s ease;opacity:0;padding:0 18px;background:var(--smoke);border-top:0px solid var(--mist)}
+.cov-detail.open{max-height:900px;opacity:1;padding:20px 18px;border-top:1px solid var(--mist)}
+.cov-detail .fg{gap:16px 22px}
+
+/* RISK METER */
+.risk-meter{display:flex;gap:6px}
+.rb{flex:1;height:6px;background:var(--mist);border-radius:3px;cursor:pointer;transition:all .2s}
+.rl-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px}
+
+/* SLIDERS */
+.slider-wrap{display:flex;flex-direction:column;gap:6px}
+.slider-row{display:flex;align-items:center;gap:12px}
+.slider-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:3px;background:var(--mist);border:none;padding:0;box-shadow:none;outline:none;cursor:pointer;border-radius:3px}
+.slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--gold);cursor:pointer;border:3px solid #fff;box-shadow:0 0 0 1.5px var(--gold)}
+.sam{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--gold);min-width:76px;text-align:right;white-space:nowrap}
+.sl-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
+
+/* INFO NOTE */
+.inote{font-size:11px;color:var(--muted);background:var(--smoke);border-left:2px solid var(--gold);padding:7px 11px;border-radius:0 2px 2px 0;line-height:1.5;margin-top:4px}
+
+/* ESTATE */
+.est-item{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border:1px solid var(--mist);background:#fff;border-radius:var(--r);cursor:pointer;transition:all .2s;margin-bottom:9px}
+.est-item:hover{border-color:var(--gold);background:var(--gold-dim)}
+.est-item.chk{border-color:var(--gold);background:var(--gold-dim)}
+.est-chk{width:20px;height:20px;min-width:20px;border:1.5px solid var(--gold-border);border-radius:3px;background:#fff;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-top:1px}
+.est-item.chk .est-chk{background:var(--gold);border-color:var(--gold)}
+.est-chk svg{display:none}
+.est-item.chk .est-chk svg{display:block}
+.est-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.est-desc{font-size:12px;color:var(--muted);line-height:1.5;font-weight:300}
+.ebadge{display:inline-block;font-size:9px;padding:2px 8px;border-radius:50px;margin-left:8px;font-weight:600;letter-spacing:.08em;vertical-align:middle}
+.eb-done{background:#e8f8f0;color:#27ae60}
+.eb-none{background:#fdeded;color:#c0392b}
+
+/* PORTFOLIO */
+.port-item{background:#fff;border:1px solid var(--mist);padding:16px;margin-bottom:12px;position:relative;border-radius:var(--r)}
+.port-item .rm-pi{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px;transition:color .2s}
+.port-item .rm-pi:hover{color:#c0392b}
+
+.add-btn{display:flex;align-items:center;gap:8px;background:none;border:1px dashed var(--gold-border);color:var(--gold);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 18px;cursor:pointer;width:100%;justify-content:center;transition:all .2s;border-radius:var(--r);margin-top:4px}
+.add-btn:hover{background:var(--gold-dim);border-color:var(--gold)}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:36px;padding-top:24px;border-top:1px solid var(--mist)}
+.btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.06em;padding:12px 26px;border:none;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:7px;border-radius:var(--r)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--mist)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--ink)}
+.btn-primary{background:var(--gold);color:#fff;box-shadow:0 4px 20px rgba(201,168,76,.3)}
+.btn-primary:hover{background:#B8932A;transform:translateY(-1px);box-shadow:0 8px 28px rgba(201,168,76,.4)}
+.btn-dark{background:var(--ink);color:#fff;box-shadow:0 4px 20px rgba(14,14,14,.2)}
+.btn-dark:hover{background:var(--ink-soft);transform:translateY(-1px)}
+.btn-dark:disabled{background:#aaa;cursor:not-allowed;transform:none;box-shadow:none}
+
+.step-panel{display:none}
+.step-panel.active{display:block;animation:fadeUp .45s ease both}
+
+/* SUCCESS */
+.suc{text-align:center;padding:16px 0}
+.suc-icon{width:68px;height:68px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;animation:scaleIn .5s ease both}
+.suc h2{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;margin-bottom:10px}
+.suc p{font-size:14px;color:var(--muted);line-height:1.7;max-width:360px;margin:0 auto 26px}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;margin:20px 0;background:var(--smoke);border:1px solid var(--mist);padding:20px}
+@media(max-width:480px){.sum-grid{grid-template-columns:1fr}}
+.si .sl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block}
+.si .sv{font-size:14px;color:var(--ink)}
+
+/* AI ANALYSIS BOX */
+.briefing-status{margin-top:20px;background:var(--smoke);border:1px solid var(--mist);border-radius:var(--r);padding:14px 18px}
+.bs-row{display:flex;align-items:center;gap:12px}
+.bs-spinner{display:flex;align-items:center;gap:5px}
+.bs-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse .9s ease infinite}
+.bs-dot:nth-child(2){animation-delay:.2s}
+.bs-dot:nth-child(3){animation-delay:.4s}
+.bs-text{font-size:13px;color:var(--muted);font-weight:400}
+.bs-done{display:flex;align-items:center;gap:10px;font-size:13px;color:#1a8a4a;font-weight:500}
+.bs-done-icon{width:22px;height:22px;border-radius:50%;background:#e8f8f0;border:1px solid #b8e6cc;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bs-err{font-size:12px;color:#a93226;margin-top:8px}
+
+/* EMAIL INPUT */
+
+
+.char-count{text-align:right;font-size:11px;color:var(--muted)}
+.footer-note{text-align:center;margin-top:22px;font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px}
+
+@keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<header class="header">
+  <div class="logo-mark"><div class="logo-d"></div><span class="logo-t">Wealth Advisory</span><div class="logo-d"></div></div>
+  <h1>Your <em>Discovery</em> Profile</h1>
+  <p>This confidential form helps our advisors craft a proposal tailored precisely to your needs and aspirations.</p>
+</header>
+
+<div class="progress-rail">
+  <div class="step-node active" data-step="1"><div class="step-circle"><span class="num">1</span><svg viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="step-label">Personal</span></div>
+  <div class="step-line" id="l1"></div>
+  <div class="step-node" data-step="2"><div class="step-circle"><span class="num">2</span><svg viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="step-label">Financial</span></div>
+  <div class="step-line" id="l2"></div>
+  <div class="step-node" data-step="3"><div class="step-circle"><span class="num">3</span><svg viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="step-label">Portfolio</span></div>
+  <div class="step-line" id="l3"></div>
+  <div class="step-node" data-step="4"><div class="step-circle"><span class="num">4</span><svg viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="step-label">Protection</span></div>
+  <div class="step-line" id="l4"></div>
+  <div class="step-node" data-step="5"><div class="step-circle"><span class="num">5</span><svg viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="step-label">Estate</span></div>
+  <div class="step-line" id="l5"></div>
+  <div class="step-node" data-step="6"><div class="step-circle"><span class="num">6</span><svg viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="step-label">Goals</span></div>
+</div>
+
+<div class="card">
+
+<!-- ══ STEP 1: PERSONAL ══ -->
+<div class="step-panel active" id="step1">
+  <div class="sec-hdr"><div class="sec-tag">Step 01 of 06</div><div class="sec-title">Personal Details</div><div class="sec-sub">Let us get to know you. All information is held in strict confidence.</div></div>
+  <div class="fg">
+    <div class="field"><label>First Name <span class="req">*</span></label><input type="text" id="firstName" placeholder="e.g. Wei Ming"></div>
+    <div class="field"><label>Last Name <span class="req">*</span></label><input type="text" id="lastName" placeholder="e.g. Tan"></div>
+    <div class="field"><label>Email Address <span class="req">*</span></label><input type="email" id="email" placeholder="you@domain.com"></div>
+    <div class="field"><label>Mobile Number</label><input type="tel" id="phone" placeholder="+65 9000 0000"></div>
+    <div class="field"><label>Date of Birth</label><input type="date" id="dob"></div>
+    <div class="field"><label>Nationality</label><input type="text" id="nationality" placeholder="e.g. Singaporean"></div>
+    <div class="field"><label>City of Residence</label><input type="text" id="city" placeholder="e.g. Singapore"></div>
+    <div class="field"><label>Country</label><select id="country"><option value="">Select…</option><option selected>Singapore</option><option>Malaysia</option><option>United States</option><option>United Kingdom</option><option>Australia</option><option>Hong Kong</option><option>Canada</option><option>UAE</option><option>Other</option></select></div>
+    <div class="fdiv"></div>
+    <div class="field"><label>Marital Status</label><select id="marital"><option value="">Select…</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select></div>
+    <div class="field"><label>Number of Dependents</label><select id="dependents"><option value="">Select…</option><option>None</option><option>1</option><option>2</option><option>3</option><option>4+</option></select></div>
+    <div class="field"><label>Employment Status</label><select id="employment"><option value="">Select…</option><option>Employed (Salaried)</option><option>Self-Employed</option><option>Business Owner</option><option>Retired</option><option>Semi-Retired</option></select></div>
+    <div class="field"><label>Industry / Profession</label><input type="text" id="profession" placeholder="e.g. Technology, Finance, Legal…"></div>
+    <div class="fdiv"></div>
+    <div class="field ff">
+      <label>Do you own a car?</label>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:2px">
+        <div class="tg-grp" id="carOwn">
+          <div class="tg" onclick="setCarOwn(this,'no')">No</div>
+          <div class="tg" onclick="setCarOwn(this,'yes')">Yes</div>
+        </div>
+      </div>
+    </div>
+    <div class="field ff" id="carDetails" style="display:none">
+      <div class="fg" style="background:white;border:1px solid var(--mist);padding:16px 18px;border-radius:var(--r);gap:16px 22px">
+        <div class="field"><label>Make &amp; Model</label><input type="text" id="carModel" placeholder="e.g. Toyota Camry, BMW 3 Series…"></div>
+        <div class="field"><label>Year of Registration</label><input type="number" id="carYear" placeholder="e.g. 2021" min="1990" max="2026"></div>
+        <div class="field"><label>Estimated Market Value</label><div class="pfx-wrap"><input type="number" id="carValue" placeholder="0"></div></div>
+        <div class="field"><label>Car Loan Outstanding?</label>
+          <div class="tg-grp" id="carLoan">
+            <div class="tg on" onclick="soloTg(this,'carLoan')">No Loan</div>
+            <div class="tg" onclick="soloTg(this,'carLoan')">Has Loan</div>
+          </div>
+        </div>
+        <div class="field" id="carLoanAmt" style="display:none"><label>Loan Outstanding Balance</label><div class="pfx-wrap"><input type="number" id="carLoanVal" placeholder="0"></div></div>
+        <div class="field" id="carLoanMo" style="display:none"><label>Monthly Repayment</label><div class="pfx-wrap"><input type="number" id="carLoanMoVal" placeholder="0"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="nav"><span></span><button class="btn btn-primary" onclick="goTo(2)">Continue <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+</div>
+
+<!-- ══ STEP 2: FINANCIAL ══ -->
+<div class="step-panel" id="step2">
+  <div class="sec-hdr"><div class="sec-tag">Step 02 of 06</div><div class="sec-title">Financial Overview</div><div class="sec-sub">Understanding your financial position helps us tailor advice that is truly relevant.</div></div>
+  <div class="fg">
+    <div class="field"><label>Monthly Gross Income</label><div class="pfx-wrap"><input type="number" id="mIncome" placeholder="0" oninput="calcSurplus()"></div></div>
+    <div class="field"><label>Annual Income (approx.)</label><div class="pfx-wrap"><input type="number" id="aIncome" placeholder="0"></div></div>
+    <div class="field"><label>Net Worth (approx.)</label><div class="pfx-wrap"><input type="number" id="networth" placeholder="0"></div></div>
+    <div class="field"><label>Total Investable Assets</label><div class="pfx-wrap"><input type="number" id="investable" placeholder="0"></div></div>
+    <div class="fdiv"></div>
+    <div class="cpf-block">
+      <div class="cpf-title">CPF Balances <span class="cpf-badge">Singapore</span></div>
+      <div class="cpf-g">
+        <div class="cpf-item"><label>Ordinary Account (OA)</label><div class="pfx-wrap" style="position:relative"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none">$</span><input type="number" id="cpfOA" placeholder="0" oninput="calcCpf()"></div></div>
+        <div class="cpf-item"><label>Special Account (SA)</label><div style="position:relative"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none">$</span><input type="number" id="cpfSA" placeholder="0" oninput="calcCpf()"></div></div>
+        <div class="cpf-item"><label>Medisave (MA)</label><div style="position:relative"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none">$</span><input type="number" id="cpfMA" placeholder="0" oninput="calcCpf()"></div></div>
+        <div class="cpf-item"><label>Retirement Account (RA)</label><div style="position:relative"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none">$</span><input type="number" id="cpfRA" placeholder="0" oninput="calcCpf()"></div></div>
+        <div class="cpf-item"><label>Monthly Contribution</label><div style="position:relative"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none">$</span><input type="number" id="cpfMo" placeholder="0"></div></div>
+      </div>
+      <div class="cpf-total"><span class="tl">Total CPF Balance</span><span class="tv" id="cpfTotal">$0</span></div>
+    </div>
+    <div class="fdiv"></div>
+    <div class="field"><label>Monthly Living Expenses</label><div class="pfx-wrap"><input type="number" id="mExpenses" placeholder="0" oninput="calcSurplus()"></div></div>
+    <div class="field"><label>Monthly Loan Commitments</label><div class="pfx-wrap"><input type="number" id="mCommit" placeholder="0" oninput="calcSurplus()"></div></div>
+    <div class="surplus-box"><div><div class="s-lbl">Derived Monthly Surplus</div><div class="s-hint">Income − Expenses − Commitments (auto-calculated)</div></div><div class="s-val" id="surplusDisplay">$0 / mo</div></div>
+    <div class="fdiv"></div>
+    <div class="field ff">
+      <label>Outstanding Liabilities — Itemised</label>
+      <span class="fhint">Add each liability for accurate net-worth and cash-flow analysis.</span>
+      <div class="liab-wrap"><table class="lt"><thead><tr><th style="width:30%">Type</th><th style="width:28%">Outstanding Balance</th><th style="width:28%">Monthly Repayment</th><th style="width:10%"></th></tr></thead><tbody id="liabBody"></tbody></table>
+      <div class="liab-tot"><span class="lt-lbl">Total Liabilities</span><span class="lt-val" id="liabTotal">$0</span></div></div>
+      <button class="add-btn" onclick="addLiab()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Add Liability</button>
+    </div>
+    <div class="fdiv"></div>
+    <div class="field"><label>Primary Currency</label><select id="currency"><option value="">Select…</option><option selected>SGD — Singapore Dollar</option><option>USD — US Dollar</option><option>GBP — British Pound</option><option>EUR — Euro</option><option>AUD — Australian Dollar</option><option>HKD — Hong Kong Dollar</option></select></div>
+    <div class="field"><label>Tax Residency</label><input type="text" id="taxres" placeholder="e.g. Singapore"></div>
+    <div class="field ff"><label>Sources of Wealth</label>
+      <div class="pg"><div class="pill" onclick="togglePill(this)">Employment</div><div class="pill" onclick="togglePill(this)">Business Ownership</div><div class="pill" onclick="togglePill(this)">Investment Returns</div><div class="pill" onclick="togglePill(this)">Real Estate</div><div class="pill" onclick="togglePill(this)">Inheritance</div><div class="pill" onclick="togglePill(this)">Sale of Business</div><div class="pill" onclick="togglePill(this)">CPF</div><div class="pill" onclick="togglePill(this)">Pension</div></div>
+    </div>
+  </div>
+  <div class="nav"><button class="btn btn-ghost" onclick="goTo(1)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</button><button class="btn btn-primary" onclick="goTo(3)">Continue <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+</div>
+
+<!-- ══ STEP 3: PORTFOLIO ══ -->
+<div class="step-panel" id="step3">
+  <div class="sec-hdr"><div class="sec-tag">Step 03 of 06</div><div class="sec-title">Existing Portfolio</div><div class="sec-sub">Tell us about your current holdings so we can build a cohesive strategy around them.</div></div>
+  <div class="fg" style="margin-bottom:20px">
+    <div class="field ff"><label>Investment Experience</label>
+      <div class="cg">
+        <label class="ci" onclick="selChoice(this,'exp')"><input type="radio" name="exp"><div class="cl">Beginner <small>Limited or no prior investment experience</small></div></label>
+        <label class="ci" onclick="selChoice(this,'exp')"><input type="radio" name="exp"><div class="cl">Intermediate <small>Some experience with stocks, funds or property</small></div></label>
+        <label class="ci" onclick="selChoice(this,'exp')"><input type="radio" name="exp"><div class="cl">Advanced <small>Diverse asset class experience, self-directed</small></div></label>
+        <label class="ci" onclick="selChoice(this,'exp')"><input type="radio" name="exp"><div class="cl">Sophisticated <small>Professional-level knowledge, institutional exposure</small></div></label>
+      </div>
+    </div>
+  </div>
+  <div style="margin-bottom:20px">
+    <div class="field" style="margin-bottom:10px"><label>Current Holdings</label><span class="fhint">Add each asset class or holding. Include CPFIS / SRS where applicable.</span></div>
+    <div id="portItems"></div>
+    <button class="add-btn" onclick="addPort()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Add Holding</button>
+  </div>
+  <div class="fg">
+    <div class="field ff"><label>Risk Tolerance <span class="req">*</span></label>
+      <div class="risk-meter" id="riskMeter"><div class="rb" onclick="setRisk(1)"></div><div class="rb" onclick="setRisk(2)"></div><div class="rb" onclick="setRisk(3)"></div><div class="rb" onclick="setRisk(4)"></div><div class="rb" onclick="setRisk(5)"></div></div>
+      <div class="rl-row"><span>Very Conservative</span><span id="riskLabel" style="color:var(--gold);font-weight:500;font-size:12px">Select your level</span><span>Very Aggressive</span></div>
+    </div>
+    <div class="field ff"><label>Investment Horizon</label>
+      <div class="pg"><div class="pill" onclick="togglePill(this)">Under 1 year</div><div class="pill" onclick="togglePill(this)">1–3 years</div><div class="pill" onclick="togglePill(this)">3–5 years</div><div class="pill" onclick="togglePill(this)">5–10 years</div><div class="pill" onclick="togglePill(this)">10–20 years</div><div class="pill" onclick="togglePill(this)">20+ years</div></div>
+    </div>
+    <div class="field ff"><label>Asset Classes of Interest</label>
+      <div class="pg"><div class="pill" onclick="togglePill(this)">Equities</div><div class="pill" onclick="togglePill(this)">Fixed Income</div><div class="pill" onclick="togglePill(this)">REITs</div><div class="pill" onclick="togglePill(this)">Unit Trusts</div><div class="pill" onclick="togglePill(this)">ETFs</div><div class="pill" onclick="togglePill(this)">CPFIS</div><div class="pill" onclick="togglePill(this)">SRS</div><div class="pill" onclick="togglePill(this)">Private Equity</div><div class="pill" onclick="togglePill(this)">Commodities</div><div class="pill" onclick="togglePill(this)">ESG / Impact</div><div class="pill" onclick="togglePill(this)">Alternatives</div></div>
+    </div>
+    <div class="field ff"><label>Exclusions / Restrictions</label><textarea id="exclusions" placeholder="Any sectors, geographies or instruments you wish to avoid…" rows="2"></textarea></div>
+  </div>
+  <div class="nav"><button class="btn btn-ghost" onclick="goTo(2)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</button><button class="btn btn-primary" onclick="goTo(4)">Continue <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+</div>
+
+<!-- ══ STEP 4: PROTECTION ══ -->
+<div class="step-panel" id="step4">
+  <div class="sec-hdr"><div class="sec-tag">Step 04 of 06</div><div class="sec-title">Risk Management &amp; Protection</div><div class="sec-sub">First indicate whether you have each type of coverage. If you do, further details will appear for you to complete.</div></div>
+
+  <!-- HOSPITALISATION -->
+  <div class="sub-hdr" style="margin-top:0">Hospitalisation &amp; Medical</div>
+  <div class="sub-desc">Coverage for inpatient hospital stays, surgery and specialist treatment.</div>
+  <div class="cov-card" id="card-hosp">
+    <div class="cov-card-hdr">
+      <div class="cov-card-left"><span class="cov-card-title">Hospital / Shield Plan</span><span class="ins-tag t-blue">MediShield / IP</span></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="cov-status-badge csb-none" id="badge-hosp">Not Covered</span>
+        <div class="cov-toggle-wrap">
+          <button class="cov-toggle-btn has-no" id="btn-hosp-no" onclick="setCov('hosp',false)"><svg viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> No</button>
+          <button class="cov-toggle-btn" id="btn-hosp-yes" onclick="setCov('hosp',true)"><svg viewBox="0 0 14 14" fill="none"><path d="M1.5 7L5.5 11L12.5 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Yes</button>
+        </div>
+      </div>
+    </div>
+    <div class="cov-detail" id="detail-hosp">
+      <div class="fg">
+        <div class="field ff"><label>Ward / Hospital Type</label>
+          <div class="tg-grp" id="hospType">
+            <div class="tg on" onclick="solo(this,'hospType')">Public — C Ward</div>
+            <div class="tg" onclick="solo(this,'hospType')">Public — B2 Ward</div>
+            <div class="tg" onclick="solo(this,'hospType')">Public — A Ward</div>
+            <div class="tg" onclick="solo(this,'hospType')">Private Hospital</div>
+          </div>
+        </div>
+        <div class="field"><label>Integrated Shield Plan (IP)</label>
+          <div class="tg-grp" id="hospIP">
+            <div class="tg on" onclick="solo(this,'hospIP')">MediShield Life Only</div>
+            <div class="tg" onclick="solo(this,'hospIP')">With IP Upgrade</div>
+          </div>
+        </div>
+        <div class="field"><label>Rider Status</label>
+          <div class="tg-grp" id="hospRider">
+            <div class="tg on" onclick="solo(this,'hospRider')">Without Rider</div>
+            <div class="tg" onclick="solo(this,'hospRider')">With Standard Rider (5% co-pay)</div>
+            <div class="tg" onclick="solo(this,'hospRider')">Full Rider (pre-2021)</div>
+          </div>
+          <div class="inote">Post-2021 regulations require a minimum 5% co-payment on IP riders. Full riders issued before 2021 are grandfathered.</div>
+        </div>
+        <div class="field"><label>Annual Premium (approx.)</label><div class="pfx-wrap"><input type="number" placeholder="0"></div></div>
+        <div class="field"><label>Insurer / Plan Name</label><input type="text" placeholder="e.g. AIA HealthShield Gold Max…"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRITICAL ILLNESS -->
+  <div class="sub-hdr">Critical Illness (CI)</div>
+  <div class="sub-desc">Lump-sum payout upon diagnosis of a covered critical condition.</div>
+  <div class="cov-card" id="card-ci">
+    <div class="cov-card-hdr">
+      <div class="cov-card-left"><span class="cov-card-title">Critical Illness Plan</span><span class="ins-tag t-teal">CI Coverage</span></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="cov-status-badge csb-none" id="badge-ci">Not Covered</span>
+        <div class="cov-toggle-wrap">
+          <button class="cov-toggle-btn has-no" id="btn-ci-no" onclick="setCov('ci',false)"><svg viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> No</button>
+          <button class="cov-toggle-btn" id="btn-ci-yes" onclick="setCov('ci',true)"><svg viewBox="0 0 14 14" fill="none"><path d="M1.5 7L5.5 11L12.5 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Yes</button>
+        </div>
+      </div>
+    </div>
+    <div class="cov-detail" id="detail-ci">
+      <div class="fg">
+        <div class="field ff"><label>Stage of Coverage <span class="fhint">(select all that apply)</span></label>
+          <div class="tg-grp">
+            <div class="tg" onclick="multi(this)">Early Stage</div>
+            <div class="tg" onclick="multi(this)">Intermediate Stage</div>
+            <div class="tg" onclick="multi(this)">Late Stage</div>
+          </div>
+          <div class="inote">Multi-stage plans provide tiered payouts. Early CI pays at pre-invasive diagnosis — the most valuable stage for treatment funding.</div>
+        </div>
+        <div class="field"><label>Reset Benefit</label>
+          <div class="tg-grp" id="ciReset"><div class="tg on" onclick="solo(this,'ciReset')">No Reset</div><div class="tg" onclick="solo(this,'ciReset')">Has Reset</div></div>
+          <div class="inote">Restores full sum assured after a CI claim for subsequent unrelated illnesses.</div>
+        </div>
+        <div class="field"><label>Relapse Benefit</label>
+          <div class="tg-grp" id="ciRelapse"><div class="tg on" onclick="solo(this,'ciRelapse')">No Relapse</div><div class="tg" onclick="solo(this,'ciRelapse')">Has Relapse</div></div>
+          <div class="inote">Pays again if the same condition recurs after a waiting period (typically 1–3 years).</div>
+        </div>
+        <div class="field ff"><label>Sum Assured — Critical Illness</label>
+          <div class="slider-wrap"><div class="slider-row"><input type="range" min="0" max="2000000" step="50000" value="0" oninput="updSlider(this,'ciAmt')" id="ciSlider"><span class="sam" id="ciAmt">$0</span></div><div class="sl-lbl"><span>$0</span><span>$500k</span><span>$1M</span><span>$1.5M</span><span>$2M</span></div></div>
+        </div>
+        <div class="field"><label>Annual Premium (approx.)</label><div class="pfx-wrap"><input type="number" placeholder="0"></div></div>
+        <div class="field"><label>Insurer / Plan Name</label><input type="text" placeholder="e.g. AIA Power Critical Cover…"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSONAL ACCIDENT -->
+  <div class="sub-hdr">Personal Accident</div>
+  <div class="sub-desc">Coverage for accidental death, TPD, and accident-related medical expenses.</div>
+  <div class="cov-card" id="card-pa">
+    <div class="cov-card-hdr">
+      <div class="cov-card-left"><span class="cov-card-title">Personal Accident Plan</span><span class="ins-tag t-rose">PA Coverage</span></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="cov-status-badge csb-none" id="badge-pa">Not Covered</span>
+        <div class="cov-toggle-wrap">
+          <button class="cov-toggle-btn has-no" id="btn-pa-no" onclick="setCov('pa',false)"><svg viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> No</button>
+          <button class="cov-toggle-btn" id="btn-pa-yes" onclick="setCov('pa',true)"><svg viewBox="0 0 14 14" fill="none"><path d="M1.5 7L5.5 11L12.5 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Yes</button>
+        </div>
+      </div>
+    </div>
+    <div class="cov-detail" id="detail-pa">
+      <div class="fg">
+        <div class="field ff"><label>Sum Assured — Accident (Death / TPD)</label>
+          <div class="slider-wrap"><div class="slider-row"><input type="range" min="0" max="1000000" step="25000" value="0" oninput="updSlider(this,'paAmt')" id="paSlider"><span class="sam" id="paAmt">$0</span></div><div class="sl-lbl"><span>$0</span><span>$250k</span><span>$500k</span><span>$750k</span><span>$1M</span></div></div>
+        </div>
+        <div class="field"><label>Accident Medical Expense Limit</label><div class="pfx-wrap"><input type="number" placeholder="0"></div></div>
+        <div class="field"><label>Annual Premium (approx.)</label><div class="pfx-wrap"><input type="number" placeholder="0"></div></div>
+        <div class="field ff"><label>Insurer / Plan Name</label><input type="text" placeholder="e.g. NTUC Income PA Assurance, FWD Big 3 PA…"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE -->
+  <div class="sub-hdr">Life Coverage</div>
+  <div class="sub-desc">Whole life, term life, or universal life policies protecting dependents and estate.</div>
+  <div class="cov-card" id="card-life">
+    <div class="cov-card-hdr">
+      <div class="cov-card-left"><span class="cov-card-title">Life Insurance Plan</span><span class="ins-tag t-gold">Life Coverage</span></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="cov-status-badge csb-none" id="badge-life">Not Covered</span>
+        <div class="cov-toggle-wrap">
+          <button class="cov-toggle-btn has-no" id="btn-life-no" onclick="setCov('life',false)"><svg viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> No</button>
+          <button class="cov-toggle-btn" id="btn-life-yes" onclick="setCov('life',true)"><svg viewBox="0 0 14 14" fill="none"><path d="M1.5 7L5.5 11L12.5 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Yes</button>
+        </div>
+      </div>
+    </div>
+    <div class="cov-detail" id="detail-life">
+      <div class="fg">
+        <div class="field ff"><label>Plan Type <span class="fhint">(select all that apply)</span></label>
+          <div class="tg-grp"><div class="tg" onclick="multi(this)">Term Life</div><div class="tg" onclick="multi(this)">Whole Life</div><div class="tg" onclick="multi(this)">Universal Life</div><div class="tg" onclick="multi(this)">Endowment</div></div>
+        </div>
+        <div class="field ff"><label>Sum Assured — Life Coverage</label>
+          <div class="slider-wrap"><div class="slider-row"><input type="range" min="0" max="5000000" step="100000" value="0" oninput="updSlider(this,'lifeAmt')" id="lifeSlider"><span class="sam" id="lifeAmt">$0</span></div><div class="sl-lbl"><span>$0</span><span>$1.25M</span><span>$2.5M</span><span>$3.75M</span><span>$5M</span></div></div>
+        </div>
+        <div class="field"><label>Annual Premium (approx.)</label><div class="pfx-wrap"><input type="number" placeholder="0"></div></div>
+        <div class="field"><label>Insurer / Plan Name</label><input type="text" placeholder="e.g. Prudential PRULife…"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUSINESS / KEYMAN -->
+  <div class="sub-hdr">Business Owner / Keyman Coverage</div>
+  <div class="sub-desc">Protects business continuity, buy-sell agreements, or key person dependency. Skip if not applicable.</div>
+  <div class="cov-card" id="card-biz">
+    <div class="cov-card-hdr">
+      <div class="cov-card-left"><span class="cov-card-title">Business Protection</span><span class="ins-tag t-purple">Keyman / Owners</span></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="cov-status-badge csb-none" id="badge-biz">Not Applicable</span>
+        <div class="cov-toggle-wrap">
+          <button class="cov-toggle-btn has-no" id="btn-biz-no" onclick="setCov('biz',false)"><svg viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> No</button>
+          <button class="cov-toggle-btn" id="btn-biz-yes" onclick="setCov('biz',true)"><svg viewBox="0 0 14 14" fill="none"><path d="M1.5 7L5.5 11L12.5 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Yes</button>
+        </div>
+      </div>
+    </div>
+    <div class="cov-detail" id="detail-biz">
+      <div class="fg">
+        <div class="field ff"><label>Coverage Purpose <span class="fhint">(select all that apply)</span></label>
+          <div class="tg-grp"><div class="tg" onclick="multi(this)">Keyman Insurance</div><div class="tg" onclick="multi(this)">Buy-Sell Agreement</div><div class="tg" onclick="multi(this)">Business Loan Cover</div><div class="tg" onclick="multi(this)">Shareholder Protection</div></div>
+        </div>
+        <div class="field ff"><label>Sum Assured — Business / Owners Coverage</label>
+          <div class="slider-wrap"><div class="slider-row"><input type="range" min="0" max="10000000" step="250000" value="0" oninput="updSlider(this,'bizAmt')" id="bizSlider"><span class="sam" id="bizAmt">$0</span></div><div class="sl-lbl"><span>$0</span><span>$2.5M</span><span>$5M</span><span>$7.5M</span><span>$10M</span></div></div>
+        </div>
+        <div class="field"><label>Annual Premium (approx.)</label><div class="pfx-wrap"><input type="number" placeholder="0"></div></div>
+        <div class="field"><label>Insurer / Plan Name</label><input type="text" placeholder="e.g. Great Eastern, AIA…"></div>
+        <div class="field ff"><label>Additional Notes</label><textarea placeholder="Any other details about your business protection coverage…" rows="2"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav"><button class="btn btn-ghost" onclick="goTo(3)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</button><button class="btn btn-primary" onclick="goTo(5)">Continue <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+</div>
+
+<!-- ══ STEP 5: ESTATE ══ -->
+<div class="step-panel" id="step5">
+  <div class="sec-hdr"><div class="sec-tag">Step 05 of 06</div><div class="sec-title">Estate Planning</div><div class="sec-sub">Check items you have already completed. Unchecked items will be prioritised in your advisor's proposal.</div></div>
+  <div class="sub-hdr" style="margin-top:0">Estate Planning Checklist</div>
+  <div class="sub-desc">Tick each arrangement you currently have in place.</div>
+
+  <div class="est-item" id="eCPF" onclick="togEstate(this,'bCPF')"><div class="est-chk"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="flex:1"><div class="est-name">CPF Nomination <span class="ebadge eb-none" id="bCPF">Not Done</span></div><div class="est-desc">Directs CPF monies (OA, SA, MA, RA) upon death. CPF is NOT covered by your Will — must be nominated separately. Without nomination, funds are distributed under the Intestate Succession Act via the Public Trustee.</div></div></div>
+
+  <div class="est-item" id="eWill" onclick="togEstate(this,'bWill')"><div class="est-chk"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="flex:1"><div class="est-name">Will <span class="ebadge eb-none" id="bWill">Not Done</span></div><div class="est-desc">Legally specifies how your non-CPF assets are distributed. Without a Will, the Intestate Succession Act applies and may not honour your intended wishes for your loved ones.</div></div></div>
+
+  <div class="est-item" id="eTrust" onclick="togEstate(this,'bTrust')"><div class="est-chk"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="flex:1"><div class="est-name">Trust <span class="ebadge eb-none" id="bTrust">Not Done</span></div><div class="est-desc">Assets held by a trustee for named beneficiaries. Ideal for minors, special needs beneficiaries, or multi-generational wealth. Can bypass probate and provide structured, conditional distribution.</div></div></div>
+
+  <div class="est-item" id="eLPA" onclick="togEstate(this,'bLPA')"><div class="est-chk"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="flex:1"><div class="est-name">Lasting Power of Attorney (LPA) <span class="ebadge eb-none" id="bLPA">Not Done</span></div><div class="est-desc">Authorises a donee to manage your personal welfare and/or finances if you lose mental capacity. Must be registered with the OPG, Singapore. Without one, a Court order may be required — costly and time-consuming.</div></div></div>
+
+  <div class="est-item" id="eInsNom" onclick="togEstate(this,'bInsNom')"><div class="est-chk"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="flex:1"><div class="est-name">Insurance Policy Nomination <span class="ebadge eb-none" id="bInsNom">Not Done</span></div><div class="est-desc">Names beneficiaries directly on life policies under the Insurance Act (s73 / s49L). A statutory trust nomination protects proceeds from creditors and bypasses your estate for faster direct payout.</div></div></div>
+
+  <div class="fg" style="margin-top:22px">
+    <div class="field ff"><label>Estate Planning Notes</label><textarea id="estNotes" placeholder="Existing arrangements, cross-border assets, concerns about beneficiaries, or specific legacy wishes…" rows="3"></textarea></div>
+    <div class="field"><label>Estimated Estate Value</label><div class="pfx-wrap"><input type="number" id="estateVal" placeholder="0"></div></div>
+    <div class="field"><label>Beneficiaries Identified?</label>
+      <div class="tg-grp" id="beneStatus"><div class="tg on" onclick="solo(this,'beneStatus')">Not Yet</div><div class="tg" onclick="solo(this,'beneStatus')">Partially</div><div class="tg" onclick="solo(this,'beneStatus')">Yes — All Identified</div></div>
+    </div>
+  </div>
+  <div class="nav"><button class="btn btn-ghost" onclick="goTo(4)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</button><button class="btn btn-primary" onclick="goTo(6)">Continue <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+</div>
+
+<!-- ══ STEP 6: GOALS ══ -->
+<div class="step-panel" id="step6">
+  <div class="sec-hdr"><div class="sec-tag">Step 06 of 06</div><div class="sec-title">Goals &amp; Aspirations</div><div class="sec-sub">Your goals are the compass for everything we do. Help us understand what truly matters to you.</div></div>
+  <div class="fg">
+    <div class="field ff"><label>Primary Financial Objectives</label>
+      <div class="cg">
+        <label class="ci" onclick="selChoice(this,'obj')"><input type="checkbox" name="obj"><div class="cl">Capital Preservation <small>Protecting existing wealth is the primary concern</small></div></label>
+        <label class="ci" onclick="selChoice(this,'obj')"><input type="checkbox" name="obj"><div class="cl">Capital Growth <small>Maximising long-term portfolio growth</small></div></label>
+        <label class="ci" onclick="selChoice(this,'obj')"><input type="checkbox" name="obj"><div class="cl">Income Generation <small>Creating regular income from investments</small></div></label>
+        <label class="ci" onclick="selChoice(this,'obj')"><input type="checkbox" name="obj"><div class="cl">Wealth Transfer / Legacy <small>Passing wealth to future generations or causes</small></div></label>
+        <label class="ci" onclick="selChoice(this,'obj')"><input type="checkbox" name="obj"><div class="cl">CPF &amp; Tax Optimisation <small>Maximising CPF top-ups, SRS and tax efficiency</small></div></label>
+        <label class="ci" onclick="selChoice(this,'obj')"><input type="checkbox" name="obj"><div class="cl">Retirement Planning <small>Ensuring financial independence at retirement</small></div></label>
+      </div>
+    </div>
+    <div class="fdiv"></div>
+    <div class="field"><label>Target Portfolio Value</label><div class="pfx-wrap"><input type="number" id="targetVal" placeholder="e.g. 5000000"></div></div>
+    <div class="field"><label>Target Timeframe</label><select id="targetTime"><option value="">Select…</option><option>Within 1 year</option><option>1–3 years</option><option>3–5 years</option><option>5–10 years</option><option>10–20 years</option><option>20+ years</option></select></div>
+    <div class="field ff"><label>Upcoming Life Events</label>
+      <div class="pg"><div class="pill" onclick="togglePill(this)">Retirement</div><div class="pill" onclick="togglePill(this)">Property Purchase</div><div class="pill" onclick="togglePill(this)">Business Exit</div><div class="pill" onclick="togglePill(this)">Education Funding</div><div class="pill" onclick="togglePill(this)">Marriage</div><div class="pill" onclick="togglePill(this)">International Relocation</div><div class="pill" onclick="togglePill(this)">Inheritance Event</div><div class="pill" onclick="togglePill(this)">Charitable Giving</div></div>
+    </div>
+    <div class="field ff"><label>Concerns or Challenges</label><textarea id="concerns" placeholder="What concerns you most? Retirement adequacy, healthcare costs, market volatility, succession…" rows="3" oninput="updCount(this,'cc1')"></textarea><div class="char-count" id="cc1">0 / 500</div></div>
+    <div class="field ff"><label>What does financial success look like to you?</label><textarea id="successDef" placeholder="In your own words — what would achieving your goals feel like?" rows="3" oninput="updCount(this,'cc2')"></textarea><div class="char-count" id="cc2">0 / 500</div></div>
+    <div class="field"><label>How did you hear about us?</label><select id="referral"><option value="">Select…</option><option>Referral from client</option><option>Referral from professional</option><option>LinkedIn</option><option>Website / Search</option><option>Event / Conference</option><option>Other</option></select></div>
+    <div class="field"><label>Preferred Contact Method</label><select id="contact"><option value="">Select…</option><option>Email</option><option>Phone Call</option><option>WhatsApp</option><option>Video Call</option><option>In-Person Meeting</option></select></div>
+    <div class="field ff"><label>Additional Notes for Your Advisor</label><textarea id="notes" placeholder="Anything else your advisor should know before your next meeting…" rows="3"></textarea></div>
+  </div>
+  <div class="nav"><button class="btn btn-ghost" onclick="goTo(5)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</button><button class="btn btn-dark" id="submitBtn" onclick="submitForm()">Submit Profile <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8h9M7.5 4.5L11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+</div>
+
+<!-- ══ SUCCESS ══ -->
+<div class="step-panel" id="step7">
+  <div class="suc">
+    <div class="suc-icon" id="sucIcon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 14l6 6L23 8" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h2>Thank You, <span id="sucName">—</span></h2>
+    <p>Your discovery profile has been securely received. Your advisor will review it and be in touch shortly.</p>
+    <div class="sum-grid" id="sumGrid"></div>
+    <div class="briefing-status" id="briefingStatus">
+      <div class="bs-row" id="bsRow">
+        <div class="bs-spinner" id="bsSpinner"><div class="bs-dot"></div><div class="bs-dot"></div><div class="bs-dot"></div></div>
+        <div class="bs-text" id="bsText">Preparing your advisor briefing…</div>
+      </div>
+    </div>
+    <div style="margin-top:28px"><button class="btn btn-ghost" onclick="resetForm()">Submit Another Profile</button></div>
+  </div>
+</div>
+
+</div><!-- /card -->
+<div class="footer-note"><svg width="12" height="14" viewBox="0 0 12 14" fill="none"><rect x="1" y="6" width="10" height="7" rx="1" stroke="#7A7570" stroke-width="1.2"/><path d="M3.5 6V4a2.5 2.5 0 015 0v2" stroke="#7A7570" stroke-width="1.2" stroke-linecap="round"/></svg>All information is encrypted and held in strict confidence in accordance with our Privacy Policy</div>
+</div>
+
+<script>
+// ── STATE ──
+let riskLevel=0,portCount=0,liabCount=0;
+const riskColors=['#2ecc71','#f39c12','#e67e22','#e74c3c','#8e44ad'];
+const riskLabels=['Very Conservative','Conservative','Moderate','Aggressive','Very Aggressive'];
+const covState={hosp:false,ci:false,pa:false,life:false,biz:false};
+let collectedData={};
+let aiAnalysis='';
+
+// ── NAVIGATION ──
+function goTo(s){
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('step'+s).classList.add('active');
+  document.querySelectorAll('.step-node').forEach(n=>{
+    n.classList.remove('active','done');
+    const ns=parseInt(n.dataset.step);
+    if(ns<s)n.classList.add('done');
+    if(ns===s)n.classList.add('active');
+  });
+  for(let i=1;i<=5;i++){const l=document.getElementById('l'+i);if(l)l.classList.toggle('done',i<s);}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── TOGGLE HELPERS ──
+function togglePill(el){el.classList.toggle('on')}
+function solo(el,grpId){document.getElementById(grpId).querySelectorAll('.tg').forEach(t=>t.classList.remove('on'));el.classList.add('on')}
+function multi(el){el.classList.toggle('on')}
+function selChoice(el){
+  const t=el.querySelector('input').type;
+  if(t==='radio'){el.closest('.cg').querySelectorAll('.ci').forEach(i=>{i.classList.remove('sel');i.querySelector('input').checked=false;});el.classList.add('sel');el.querySelector('input').checked=true;}
+  else{el.classList.toggle('sel');el.querySelector('input').checked=el.classList.contains('sel');}
+}
+function togEstate(el,bid){
+  el.classList.toggle('chk');
+  const b=document.getElementById(bid);
+  if(el.classList.contains('chk')){b.textContent='Done';b.className='ebadge eb-done';}
+  else{b.textContent='Not Done';b.className='ebadge eb-none';}
+}
+
+// ── COVERAGE TOGGLE (Has / No) ──
+function setCov(key,has){
+  covState[key]=has;
+  const detail=document.getElementById('detail-'+key);
+  const badge=document.getElementById('badge-'+key);
+  const btnNo=document.getElementById('btn-'+key+'-no');
+  const btnYes=document.getElementById('btn-'+key+'-yes');
+  if(has){
+    detail.classList.add('open');
+    badge.textContent='Covered';badge.className='cov-status-badge csb-has';
+    btnYes.className='cov-toggle-btn has-yes';btnNo.className='cov-toggle-btn';
+  } else {
+    detail.classList.remove('open');
+    const isNA=key==='biz';
+    badge.textContent=isNA?'Not Applicable':'Not Covered';badge.className='cov-status-badge csb-none';
+    btnNo.className='cov-toggle-btn has-no';btnYes.className='cov-toggle-btn';
+  }
+}
+
+// ── FINANCIAL CALCS ──
+function calcSurplus(){
+  const inc=parseFloat(document.getElementById('mIncome').value)||0;
+  const exp=parseFloat(document.getElementById('mExpenses').value)||0;
+  const com=parseFloat(document.getElementById('mCommit').value)||0;
+  const s=inc-exp-com;
+  const el=document.getElementById('surplusDisplay');
+  el.textContent=(s<0?'-$':'$')+Math.abs(s).toLocaleString('en-SG')+' / mo';
+  el.className='s-val'+(s<0?' neg':'');
+}
+function calcCpf(){
+  const t=['cpfOA','cpfSA','cpfMA','cpfRA'].reduce((s,id)=>s+(parseFloat(document.getElementById(id).value)||0),0);
+  document.getElementById('cpfTotal').textContent='$'+t.toLocaleString('en-SG');
+}
+function addLiab(){
+  liabCount++;
+  const id='lb'+liabCount;
+  const tr=document.createElement('tr');tr.id=id;
+  const sel_opts='<option value="">Type…</option><option>Home Mortgage</option><option>Car Loan</option><option>Personal Loan</option><option>Business Loan</option><option>Credit Card</option><option>Study Loan</option><option>Renovation Loan</option><option>Investment Loan</option><option>Other</option>';
+  const sv=`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7570' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")`;
+  tr.innerHTML=`<td><select style="font-size:12px;padding:7px 24px 7px 8px;width:100%;appearance:none;-webkit-appearance:none;background-image:${sv};background-repeat:no-repeat;background-position:right 7px center">${sel_opts}</select></td><td class="nc"><input type="number" placeholder="0" oninput="calcLiabTotal()"></td><td class="nc"><input type="number" placeholder="0"></td><td><button class="rm-btn" onclick="document.getElementById('${id}').remove();calcLiabTotal()">×</button></td>`;
+  document.getElementById('liabBody').appendChild(tr);
+}
+function calcLiabTotal(){
+  let t=0;document.querySelectorAll('#liabBody tr').forEach(tr=>{const i=tr.querySelectorAll('input')[0];if(i)t+=parseFloat(i.value)||0;});
+  document.getElementById('liabTotal').textContent='$'+t.toLocaleString('en-SG');
+}
+function addPort(){
+  portCount++;const id='p'+portCount;
+  const d=document.createElement('div');d.className='port-item';d.id=id;
+  const sv=`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7570' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")`;
+  d.innerHTML=`<button class="rm-pi" onclick="document.getElementById('${id}').remove()">×</button>
+  <div class="fg t" style="gap:12px">
+    <div class="field"><label>Asset Class</label><select style="font-size:13px;padding:9px 26px 9px 10px;width:100%;border:1px solid var(--mist);border-radius:2px;appearance:none;-webkit-appearance:none;background-image:${sv};background-repeat:no-repeat;background-position:right 8px center;outline:none" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--mist)'"><option value="">Select…</option><option>Equities</option><option>Bonds/Fixed Income</option><option>REITs</option><option>Cash/Deposits</option><option>Unit Trusts</option><option>ETFs</option><option>CPFIS</option><option>SRS</option><option>Private Equity</option><option>Endowment</option><option>Crypto</option><option>Commodities</option><option>Other</option></select></div>
+    <div class="field"><label>Value (SGD)</label><div style="position:relative"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none">$</span><input type="number" placeholder="0" style="font-size:13px;padding:9px 10px 9px 22px;border:1px solid var(--mist);width:100%;border-radius:2px;outline:none" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--mist)'"></div></div>
+    <div class="field"><label>Platform</label><input type="text" placeholder="e.g. DBS, Endowus…" style="font-size:13px;padding:9px 10px;border:1px solid var(--mist);width:100%;border-radius:2px;outline:none" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--mist)'"></div>
+  </div>`;
+  document.getElementById('portItems').appendChild(d);
+}
+function setRisk(l){
+  riskLevel=l;
+  document.querySelectorAll('.rb').forEach((b,i)=>{b.style.background=i<l?riskColors[l-1]:'var(--mist)';b.style.transform=i<l?'scaleY(1.6)':'scaleY(1)';});
+  const lbl=document.getElementById('riskLabel');lbl.textContent=riskLabels[l-1];lbl.style.color=riskColors[l-1];
+}
+function updSlider(el,did){
+  const v=parseInt(el.value);
+  let d=v>=1000000?'$'+(v/1000000).toFixed(v%1000000===0?0:1)+'M':v>=1000?'$'+(v/1000).toFixed(0)+'k':'$'+v;
+  document.getElementById(did).textContent=d;
+  el.style.background=`linear-gradient(to right,var(--gold) ${(v/el.max)*100}%,var(--mist) ${(v/el.max)*100}%)`;
+}
+function updCount(el,id){el.value=el.value.substring(0,500);document.getElementById(id).textContent=el.value.length+' / 500';}
+
+// ── CAR OWNERSHIP ──
+function setCarOwn(el,val){
+  document.getElementById('carOwn').querySelectorAll('.tg').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('carDetails').style.display=val==='yes'?'block':'none';
+  if(val==='no'){
+    ['carModel','carValue','carYear','carLoanVal','carLoanMoVal'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    document.getElementById('carLoanAmt').style.display='none';
+    document.getElementById('carLoanMo').style.display='none';
+    const lb=document.getElementById('carLoan').querySelectorAll('.tg');
+    lb.forEach(t=>t.classList.remove('on')); if(lb[0])lb[0].classList.add('on');
+  }
+}
+function soloTg(el,grpId){
+  document.getElementById(grpId).querySelectorAll('.tg').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  if(grpId==='carLoan'){
+    const hasLoan=el.textContent.trim()==='Has Loan';
+    document.getElementById('carLoanAmt').style.display=hasLoan?'block':'none';
+    document.getElementById('carLoanMo').style.display=hasLoan?'block':'none';
+    if(!hasLoan){const cv=document.getElementById('carLoanVal');if(cv)cv.value='';const cm=document.getElementById('carLoanMoVal');if(cm)cm.value='';} 
+  }
+}
+
+// ── COLLECT ALL DATA ──
+function collectData(){
+  const get=id=>(document.getElementById(id)||{}).value||'';
+  const getActivePills=(grpId)=>{const g=document.getElementById(grpId);return g?[...g.querySelectorAll('.tg.on,.pill.on')].map(e=>e.textContent.trim()).join(', '):'';};
+  const getActivePillsAll=(sel)=>[...document.querySelectorAll(sel)].map(e=>e.textContent.trim()).join(', ');
+  const estDone=['eCPF','eWill','eTrust','eLPA','eInsNom'].filter(id=>document.getElementById(id)?.classList.contains('chk')).map(id=>document.getElementById(id).querySelector('.est-name').childNodes[0].textContent.trim());
+  const objectives=[...document.querySelectorAll('#step6 .ci.sel .cl')].map(e=>e.childNodes[0].textContent.trim());
+  const experience=[...document.querySelectorAll('#step3 .ci.sel .cl')].map(e=>e.childNodes[0].textContent.trim()).join('')||'Not indicated';
+
+  // Collect liabilities as structured list
+  const liabItems=[];
+  document.querySelectorAll('#liabBody tr').forEach(tr=>{
+    const cells=tr.querySelectorAll('td');
+    if(cells.length>=3){
+      const type=cells[0].querySelector('select')?.value||'';
+      const balance=cells[1].querySelector('input')?.value||'0';
+      const monthly=cells[2].querySelector('input')?.value||'0';
+      if(type||balance!=='0')liabItems.push({type:type||'Unknown',balance,monthly});
+    }
+  });
+
+  // Collect portfolio holdings
+  const holdings=[];
+  document.querySelectorAll('#portItems .port-item').forEach(item=>{
+    const sels=item.querySelectorAll('select');const inps=item.querySelectorAll('input');
+    const asset=sels[0]?.value||'';const value=inps[0]?.value||'0';const platform=inps[1]?.value||'';
+    if(asset)holdings.push({asset,value,platform});
+  });
+
+  return {
+    personal:{firstName:get('firstName'),lastName:get('lastName'),email:get('email'),phone:get('phone'),dob:get('dob'),nationality:get('nationality'),city:get('city'),country:get('country'),marital:get('marital'),dependents:get('dependents'),employment:get('employment'),profession:get('profession'),car:{owns:(()=>{const g=document.getElementById('carOwn');return g&&g.querySelector('.tg.on')?.textContent.trim()||'No';})(),model:get('carModel'),year:get('carYear'),value:get('carValue'),hasLoan:(()=>{const g=document.getElementById('carLoan');return g&&g.querySelector('.tg.on')?.textContent.trim()||'No Loan';})(),loanBalance:get('carLoanVal'),loanMonthly:get('carLoanMoVal')}},
+    financial:{monthlyIncome:get('mIncome'),annualIncome:get('aIncome'),networth:get('networth'),investable:get('investable'),monthlyExpenses:get('mExpenses'),monthlyCommitments:get('mCommit'),surplus:document.getElementById('surplusDisplay')?.textContent,cpf:{OA:get('cpfOA'),SA:get('cpfSA'),MA:get('cpfMA'),RA:get('cpfRA'),monthly:get('cpfMo'),total:document.getElementById('cpfTotal')?.textContent},liabilities:{total:document.getElementById('liabTotal')?.textContent,items:liabItems},currency:get('currency'),taxres:get('taxres'),wealthSources:getActivePillsAll('#step2 .pill.on')},
+    portfolio:{riskTolerance:riskLevel?riskLabels[riskLevel-1]:'Not indicated',horizon:getActivePillsAll('#step3 .pill.on'),assetClasses:getActivePillsAll('#step3 .pill.on'),exclusions:get('exclusions'),experience,holdings},
+    protection:{hospitalisation:{hasCoverage:covState.hosp,wardType:getActivePills('hospType'),ipStatus:getActivePills('hospIP'),riderStatus:getActivePills('hospRider')},criticalIllness:{hasCoverage:covState.ci,stages:[...document.querySelectorAll('#detail-ci .tg.on')].map(e=>e.textContent.trim()).join(', '),resetBenefit:getActivePills('ciReset'),relapseBenefit:getActivePills('ciRelapse'),sumAssured:document.getElementById('ciAmt')?.textContent},personalAccident:{hasCoverage:covState.pa,sumAssured:document.getElementById('paAmt')?.textContent},lifeCoverage:{hasCoverage:covState.life,planTypes:[...document.querySelectorAll('#detail-life .tg.on')].map(e=>e.textContent.trim()).join(', '),sumAssured:document.getElementById('lifeAmt')?.textContent},businessCoverage:{hasCoverage:covState.biz,purposes:[...document.querySelectorAll('#detail-biz .tg.on')].map(e=>e.textContent.trim()).join(', '),sumAssured:document.getElementById('bizAmt')?.textContent}},
+    estatePlanning:{completedItems:estDone,incompleteItems:['CPF Nomination','Will','Trust','LPA','Insurance Nomination'].filter(n=>!estDone.some(d=>d.includes(n.split(' ')[0]))),estateValue:get('estateVal'),estNotes:get('estNotes'),beneStatus:getActivePills('beneStatus')},
+    goals:{objectives,targetValue:get('targetVal'),targetTime:get('targetTime'),lifeEvents:getActivePillsAll('#step6 .pill.on'),concerns:get('concerns'),successDef:get('successDef'),referral:get('referral'),contact:get('contact'),notes:get('notes')}
+  };
+}
+
+// ══════════════════════════════════════════════════════
+// CONFIGURATION — paste your Apps Script Web App URL here after deployment
+// ══════════════════════════════════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOwANZGxzKi8W01bpzYieolVm89V0POGvlCT4jbvb3/dev'; // ← replace after Step 2 below
+
+// ── SUBMIT ──
+async function submitForm(){
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;btn.innerHTML='Submitting…';
+  collectedData=collectData();
+  const d=collectedData;
+
+  // Client-facing summary
+  document.getElementById('sucName').textContent=d.personal.firstName||'there';
+  document.getElementById('sumGrid').innerHTML=`
+    <div class="si"><span class="sl">Name</span><span class="sv">${d.personal.firstName} ${d.personal.lastName}</span></div>
+    <div class="si"><span class="sl">Email</span><span class="sv">${d.personal.email||'—'}</span></div>
+    <div class="si"><span class="sl">Monthly Income</span><span class="sv">${d.financial.monthlyIncome?'$'+Number(d.financial.monthlyIncome).toLocaleString('en-SG'):'—'}</span></div>
+    <div class="si"><span class="sl">Monthly Surplus</span><span class="sv">${d.financial.surplus}</span></div>
+    <div class="si"><span class="sl">CPF Balance</span><span class="sv">${d.financial.cpf.total}</span></div>
+    <div class="si"><span class="sl">Total Liabilities</span><span class="sv">${d.financial.liabilities.total}</span></div>
+    <div class="si"><span class="sl">Investable Assets</span><span class="sv">${d.financial.investable?'$'+Number(d.financial.investable).toLocaleString('en-SG'):'—'}</span></div>
+    <div class="si"><span class="sl">Risk Tolerance</span><span class="sv">${d.portfolio.riskTolerance}</span></div>
+    <div class="si"><span class="sl">Protection</span><span class="sv">${Object.entries(d.protection).filter(([,v])=>v.hasCoverage).map(([k])=>k.charAt(0).toUpperCase()+k.slice(1)).join(', ')||'None indicated'}</span></div>
+    <div class="si"><span class="sl">Estate Items Done</span><span class="sv">${d.estatePlanning.completedItems.length?d.estatePlanning.completedItems.join(', '):'None'}</span></div>
+  `;
+
+  // Navigate to success immediately — client sees clean thank-you
+  document.querySelectorAll('.step-node').forEach(n=>{n.classList.remove('active');n.classList.add('done');});
+  document.querySelectorAll('.step-line').forEach(l=>l.classList.add('done'));
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('step7').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  // POST profile to Apps Script — it handles AI + Gmail draft
+  setBriefingStatus('loading','Preparing your advisor briefing…');
+  try {
+    await postToAppsScript(d);
+    setBriefingStatus('done','Your advisor briefing has been prepared and will be sent shortly.');
+  } catch(e){
+    console.error('Briefing error:',e);
+    setBriefingStatus('done','Profile received. Your advisor will be in touch shortly.');
+  }
+}
+
+// ── POST TO APPS SCRIPT ──
+async function postToAppsScript(d){
+  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbxOwANZGxzKi8W01bpzYieolVm89V0POGvlCT4jbvb3/dev'){
+    console.warn('Apps Script URL not configured — briefing skipped in dev mode');
+    return;
+  }
+  const resp = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify(d)
+  });
+  if(!resp.ok) throw new Error('Apps Script responded with status ' + resp.status);
+  return resp;
+}
+
+// ── BRIEFING STATUS ──
+function setBriefingStatus(state,msg){
+  const row=document.getElementById('bsRow');
+  if(state==='loading'){
+    row.innerHTML=`<div class="bs-spinner"><div class="bs-dot"></div><div class="bs-dot"></div><div class="bs-dot"></div></div><div class="bs-text">${msg}</div>`;
+  } else {
+    row.innerHTML=`<div class="bs-done"><div class="bs-done-icon"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1.5" stroke="#1a8a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>${msg}</span></div>`;
+  }
+}
+
+// ── RESET ──
+function resetForm(){
+  document.querySelectorAll('input:not([type=radio]):not([type=checkbox])').forEach(i=>i.value='');
+  document.querySelectorAll('textarea').forEach(t=>t.value='');
+  document.querySelectorAll('select').forEach(s=>s.selectedIndex=0);
+  document.querySelectorAll('.pill,.tg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ci').forEach(c=>{c.classList.remove('sel');const i=c.querySelector('input');if(i)i.checked=false;});
+  document.querySelectorAll('.est-item').forEach(e=>{e.classList.remove('chk');});
+  document.querySelectorAll('.ebadge').forEach(b=>{b.textContent='Not Done';b.className='ebadge eb-none';});
+  document.getElementById('portItems').innerHTML='';
+  document.getElementById('liabBody').innerHTML='';
+  portCount=0;liabCount=0;riskLevel=0;aiAnalysis='';
+  document.querySelectorAll('.rb').forEach(b=>{b.style.background='';b.style.transform='';});
+  document.getElementById('riskLabel').textContent='Select your level';
+  document.getElementById('riskLabel').style.color='var(--gold)';
+  document.getElementById('surplusDisplay').textContent='$0 / mo';
+  document.getElementById('surplusDisplay').className='s-val';
+  document.getElementById('cpfTotal').textContent='$0';
+  document.getElementById('liabTotal').textContent='$0';
+  // Reset coverage cards
+  Object.keys(covState).forEach(k=>{covState[k]=false;setCov(k,false);});
+  ['ciSlider','paSlider','lifeSlider','bizSlider'].forEach(id=>{const sl=document.getElementById(id);if(sl){sl.value=0;sl.style.background='';}});
+  ['ciAmt','paAmt','lifeAmt','bizAmt'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='$0';});
+  setBriefingStatus('loading','Preparing your advisor briefing…');
+  document.getElementById('submitBtn').disabled=false;
+  document.getElementById('submitBtn').innerHTML='Submit Profile <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8h9M7.5 4.5L11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  // restore default solo toggles
+  [['hospType',0],['hospIP',0],['hospRider',0],['ciReset',0],['ciRelapse',0],['beneStatus',0]].forEach(([g,i])=>{const gr=document.getElementById(g);if(gr){const bt=gr.querySelectorAll('.tg');if(bt[i])bt[i].classList.add('on');}});
+  goTo(1);
+}
+</script>
+</body>
+</html>
